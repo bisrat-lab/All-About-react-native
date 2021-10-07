@@ -1,0 +1,245 @@
+Node js 
+* server side projraming built on google V8
+I/O => A communication between CPU and any other process external to the
+CPU (memory, disk, network)
+
+## Parallelism is when tasks are executed in parallel
+## Concurrency is when the execution of multiple tasks is interleaved
+## Synchronous means one task is executing at a time one after another
+## Asynchronous code doesn't have to wait – your program can continue to run
+
+
+## Inside Node
+* V8 java script engine 
+    => Translates your JS code into machine code 
+* libuv
+    * is handling every Asynchronous operation 
+    * it also handling non-blocking I/O operation (means Asynchronous I/O operation)
+    * by using libuv we can access file system Asynchronous.
+
+=>Our Application
+is our code, and it will go to v8 and try to execute application if there is Asynchronous operation or IO operation it will assigned to libuv.
+
+**Server-side Event Loop**
+* The event loop is what allows Node.js to perform non-blocking I/O operations
+* A loop that picks events from the event queue and pushes their callbacks into the call stack.
+
+* timers: this phase executes callbacks scheduled by setTimeout() and setInterval().
+* pending callbacks: executes I/O callbacks deferred to the next loop iteration.
+* idle, prepare: only used internally.
+* poll: All the IO operation reading from file or network goes here. retrieve new I/O events; execute I/O related callbacks (almost all with the exception of close callbacks, the ones scheduled by timers, and setImmediate()); node will block here when appropriate.
+* check: setImmediate() callbacks are invoked here.
+* close callbacks: some close callbacks, e.g. socket.on('close', ...)if we listen close events goes here.
+
+* process.nextTick() is priority queue(it always execute first from any other queue)
+=> Which means it runs before any additional I/O events or timers fire in subsequent ticks of the event loop.
+=> 1st everything in process.nextTick() executed then the rest will executed.
+=> do not push to many things in process.nextTick() it will Block the Queue
+
+==> Microtask queue = handle promise callbacks (second)
+
+1. nextTick ==> process.nextTick()
+2. Microtask  ==> promise
+3. timers ==> setTimeout() and setInterval().
+2. check ==>  setImmediate()
+
+**P**
+how do we resolve a bloking problem in node js
+1. worker tread 
+2. child process 
+
+what is the cluser for ?
+ * to take a load blancer to take advantage of the hardware 
+
+=========================================
+Advenced MongoDB
+=========================================
+**Shema Design**
+* we have to see the UI and how it displayed 
+
+
+* {result: $elemmatch: {$gt: 5} => 
+find an element in the array [result] that value is greter than 5.
+
+**Array method**
+{id: 2, "a":[1,2,3,4]}
+
+db.col.updateOne({id:1}, {set: {a.2: 5}})
+db.col.updateOne({id:1},{$push : {'a' : 6}}) add to end [1,2,3,4,5]
+db.col.updateOne({id:1},{$pop:{'a': 1}}) [2,3,4] add to the bigining
+db.col.updateOne({id:1},{$pop:{'a': -1}}) [2,3,4] remove from th bigining 
+db.col.updateOne({id:1},{$pushAll: {a: [7,8,9]}})
+db.col.update({id;1},{$pull: {a: 5}}) remove 
+db.col.update({id;1},{$pullAll: {a: [3,4,5]}}) remove all
+db.col.update({id;1},{$addToSet: {a: 5}}) add it if there is or ignore it if there is
+
+**The Array Position($)**
+{id: 1 , grade: [85,80,84,80]} $ = 1 index
+db.stu.updateOne({id:1, grade: 80 },{$set: {greade.$: 82}}) => [85,82,84,80]
+
+**elemmatch vs arrayFilter(update multiple element)**
+{ _id: 5, grades: [ { total: 80, mean: 75, student: 8 },
+                    { total: 85, mean: 90, student: 5 },
+                    { total: 90, mean: 85, student: 3 }
+] }
+
+db.stu.updateOne({id:5, grades:{elemMatch:{total: {$lte: 90},mean :{$gt:80}}}}// $=> 1,{$set:{grades.$.student: 6}}
+)
+
+db.stu.uppdateOne({id:5},
+                {$set:{grades.$[elm].student: 6 }},
+                {arrayFiliter:[{'elm.total':{$lte:90},elm.mean:{gt: 80}}]})
+//=>{ total: 85, mean: 90, student: 6 },{ total: 90, mean: 85, student: 6 }
+
+{ "_id" : 1,
+"grades" : [
+        { type: "quiz", questions: [ 10, 8, 5 ] },
+        { type: "quiz", questions: [ 8, 9, 6 ] },
+        { type: "hw", questions: [ 5, 4, 3 ] },
+        { type: "exam", questions: [ 25, 10, 23, 0 ] },
+        ] }
+
+db.stu.updateMany({}.
+                {$inc:{"grades.$[e].questions.$[score]" : 2}},
+                {arrayFiliter: [{e.type : "quiz"},{'score': {$gte: 8}}]})
+
+
+{grades:[10,20,20]}
+{grades:[10,20,20]}
+
+db.test.update({}
+                {$set:{'grades.$[c]': 30 }},
+                {arrayfilter: [{'c': {$gt: 10, $lt:30}}] filiter the array 
+                multi:true})
+
+=======================================================
+**Mastering Reat**
+=======================================================
+* why React cus Buliding UI effectively
+* React is a javascript library. 
+* libraries consist of functions that an application can call to perform a task, 
+* framework defines how a developer designs an application.
+* the first letter of comp start with Capital letter cus react requirement  
+
+*Imperative vs Declarative*
+=>Imperative programming outlines a precise series of steps to get to
+what you want (how), like JS.
+=> Declarative programming just declares what you want, like HTML.
+* React is Delclarative
+* React allows us to declare/describe what we want like we declear state and react DOM handles it. 
+
+
+*Component Patterns*
+* container: it holda data.
+* presentational:used to render data and display it and it is stateless
+* High order comp(HOC). the component returns another component.
+
+*State Object*
+* state:used to hold our data in class  based comp 
+* state can only change it through setState() and react will trigger (render())
+* setState()
+    *  it happens batched: reflect the change one time  
+    *  it happens asynchronously
+    *  we can pass an object to be merged 
+
+* why react re-render the entire Dom prorps or state only pass parant to child and props are imuatible 
+
+*Mounting and Unmounting*
+* Mounting is the element goes to the DOM
+* Unmounting when the element of the dom Removed
+
+*Side Effect*
+* is a function that preform change somthing outside the function, like a function that changes the state.
+
+=================================================
+React Hooks
+=================================================
+*Stateful vs Stateless*
+=> both can render 
+=> Stateless does not have lifecycle events
+=> Stateless no state 
+* ? where Stateless get data from props or context
+
+**Stateless to StateFul Hooks**
+*useState()*
+* it used to change functional compontent into statefull compuntent 
+* Returns an array with two items, value, and a function to update it.
+        const [count, setCount] = React.useState(0);
+* useState doesn’t merge the rest of the state like setState. So, we must use spread.
+
+
+*useRef()*
+* it returns ref object.
+Ref it used to referance to DOM element
+* createRef: every single re-render is gone create new ref.
+* useRef() is going to create ref on the first render. 
+    (1). create ref, (2). assign to DOM, (3).use it object .current
+
+*useEffect()* 
+* used to our component needs to do something after render.
+* it takes 2 arguments callback function and array dependency 
+* called after evere render 
+
+React.useEffect(() => {
+   # Called after every render
+});( no array on dependency componentDidUpdate)
+
+React.useEffect(() => {
+  ##
+}[]);
+# only run on first render when the component mounts. (compponentDidMount)
+
+
+React.useEffect(() => {
+// Called after every render
+},[dep]);//! the fun trigger only this [dep] is triggers (shouldComponentUpdate)
+
+React.useEffect(() => {
+console.log(`Effect`);
+#  cleanup before next render if the function returns another function
+    return () => console.log(`Clean up`); (componentWillUnmount)
+});
+
+*useMemo()*
+
+* used to  memoized value when one of the deps have changed
+* It returns a memoized value.
+* when we have a big data, access from localstorage or accessign bigdata
+* const computeMemo = React.useMemo(() => compute(), []);
+
+*Custome Hooks*
+* it is just normal function 
+* name start with "use" and may call other Hooks(like useeffect, useMemo)
+* we can decide what it takes as a argument and what return 
+* when do we need custom hooks : when we want share logic between other components.
+
+*React.memo()*
+* PureComponent
+    It re-renders only when props or state changes
+    PureComponent will do a shallow comparison on both props and state.
+* React.memo() is the functional way of creating PureComponent in
+class-based components.
+* is used to change a normal component to PureComponent.
+
+*useReducer()*
+* we use it when we have a complex state
+* Reducers are mostly global.	
+* Reducer consists of 2 arguments state, and action.
+
+*contaxt*
+* it is a Global state 
+1. create context: const MyCountContext = React.createContext(); 
+2. provide context :<MyCountContext.Provider value={{count, setCount}}>
+3. to consume:  const {count, setCount} = useContext(MyCountContext)
+
+
+
+
+
+req.db.updateOne({id:1,'forecast.forecast_id': 123},{
+    $set: {'forecast.$.name': 'NEW_forecast}
+})
+
+req.db.updateOne({_id: 1, grade : 80},{$set:{grade.$: 100}})
+
+req.db.update({_id: 4, graded.tatal: 80 })
